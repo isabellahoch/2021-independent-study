@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}2021 Independent Study{% endblock %}
+{% block content %}
+<div class="container-fluid align-items-center justify-content-center">
+    
+    <h1>Statistical Calculator</h1>
+    {% if plot %}
+    <div>{{ plot|safe }}</div>
+    {% else %}
+    <form class="form" action="/" method="post">
+        <div class="initial-select">
+            <h2>Select a Dataset</h2>
+            {{ form.dataset }}
+        </div>
+        <div class="stats">
+            <h3>Explanatory Variable</h3>
+            {{ form.survey_2020_x }}
+            {{ form.redbook_survey_x }}
+            <h3>Response Variable</h3>
+            {{ form.survey_2020_y }}
+            {{ form.redbook_survey_y }}
+            {{ form.submit }}
+        </div>
+    </form>
+    
+        {% endif %}
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#data-select-field').on('change', function (e) {
+    console.log("here");
+    $('.dataset').hide();
+    if($("#data-select-field" ).val() == "Survey_2020") {
+        $(".2020survey").show();
+        console.log("2");
+    }
+    else if($("#data-select-field" ).val() == "Redbook_Survey") {
+        $(".redbooksurvey").show();
+        console.log("rbs");
+    }
+    $(".stats").show();
+});
+
+$( document ).ready(function() {
+    $('.dataset').hide();
+    $(".stats").hide();
+    $("#data-select-field option:selected").attr('disabled', 'disabled');
+});
+</script>
+{% endblock %}
