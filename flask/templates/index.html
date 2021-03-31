@@ -1,13 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Isabella's Independent Study{% endblock %}
+{% block title %}Statistical Calculator | Isabella's Independent Study{% endblock %}
 {% block content %}
 <div class="container-fluid align-items-center justify-content-center">
     
-    <h1>Statistical Calculator</h1>
+    <!-- <h1>Statistical Calculator</h1> -->
     {% if plot %}
-    <div>{{ plot|safe }}</div>
+    <div class="row">
+        <div class="col-md-4">{{ plot|safe }}</div>
+        {% if residual_plot %}
+        <div class="col-md-4">{{ residual_plot|safe }}</div>
+        {% endif %}
+        <div class="col-md-4">
+            <ul>
+                {% for stat in all_stats %}
+                <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     {% else %}
-    <form class="form" action="/" method="post">
+    <form class="form" action="/" method="POST" name="form">
         <div class="initial-select">
             <h2>Select a Dataset</h2>
             {{ form.dataset }}
@@ -19,6 +31,8 @@
             <h3>Response Variable</h3>
             {{ form.survey_2020_y }}
             {{ form.redbook_survey_y }}
+            <h3>Precision</h3>
+            {{ form.decimals }}
             {{ form.submit }}
         </div>
     </form>
