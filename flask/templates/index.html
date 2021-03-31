@@ -18,11 +18,21 @@
             </ul>
         </div>
     </div>
+    {% elif all_stats %}
+    <div class="row">
+        <ul>
+            {% for stat in all_stats %}
+            <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+            {% endfor %}
+        </ul>
+    </div>
     {% else %}
     <form class="form" action="/" method="POST" name="form">
         <div class="initial-select">
             <h2>Select a Dataset</h2>
             {{ form.dataset }}
+            <h2>Select a Function</h2>
+            {{ form.function }}
         </div>
         <div class="stats">
             <h3>Explanatory Variable</h3>
@@ -35,6 +45,14 @@
             {{ form.decimals }}
             {{ form.submit }}
         </div>
+        <div class="t-test">
+            <h3>Select Variable</h3>
+            {{ form.survey_2020_t }}
+            {{ form.redbook_survey_t }}
+            <h3>Specify hypothetical mean value</h3>
+            {{ form.hypothetical_mean }}
+            {{ form.submit }}
+        </div>
     </form>
     
         {% endif %}
@@ -42,24 +60,44 @@
 {% endblock %}
 {% block js %}
 <script>
-$('#data-select-field').on('change', function (e) {
+$('#function-select-field').on('change', function (e) {
     console.log("here");
     $('.dataset').hide();
-    if($("#data-select-field" ).val() == "Survey_2020") {
-        $(".2020survey").show();
-        console.log("2");
+    $(".stats").hide();
+    $(".t-test").hide();
+    if($("#function-select-field" ).val() == "scatterplot") {
+        if($("#data-select-field" ).val() == "Survey_2020") {
+            $(".2020survey-scatterplot").show();
+        }
+        else if($("#data-select-field" ).val() == "Redbook_Survey") {
+            $(".redbooksurvey-scatterplot").show();
+        }
+        $(".stats").show();
     }
-    else if($("#data-select-field" ).val() == "Redbook_Survey") {
-        $(".redbooksurvey").show();
-        console.log("rbs");
+    else if($("#function-select-field" ).val() == "1_samp_t_test") {
+        if($("#data-select-field" ).val() == "Survey_2020") {
+            $(".2020survey-t-test").show();
+        }
+        else if($("#data-select-field" ).val() == "Redbook_Survey") {
+            $(".redbooksurvey-t-test").show();
+        }
+        $(".t-test").show();
     }
-    $(".stats").show();
+    // if($("#data-select-field" ).val() == "Survey_2020") {
+    //     $(".2020survey").show();
+    // }
+    // else if($("#data-select-field" ).val() == "Redbook_Survey") {
+    //     $(".redbooksurvey").show();
+    //     console.log("rbs");
+    // }
 });
 
 $( document ).ready(function() {
     $('.dataset').hide();
     $(".stats").hide();
+    $(".t-test").hide();
     $("#data-select-field option:selected").attr('disabled', 'disabled');
+    $("#function-select-field option:selected").attr('disabled', 'disabled');
 });
 </script>
 {% endblock %}

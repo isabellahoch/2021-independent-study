@@ -76,46 +76,60 @@ def index():
 		print(request.form)
 		print(request.form['dataset'])
 		if request.form and request.form['dataset'] is not None:
-			fig = Figure()
-			ax = fig.subplots()
 			# ax.plot(data[x_input],data[y_input], 'yo', data[x_input], poly1d_fn(data[x_input]), '--k')
 			data = pd.read_csv('static/data/'+str(request.form['dataset'])+'.csv')
 			print(data)
-			if request.form['dataset'] == "Survey_2020":
-				x_input = request.form['survey_2020_x']
-				y_input = request.form['survey_2020_y']
-			elif request.form['dataset'] == "Redbook_Survey":
-				x_input = request.form['redbook_survey_x']
-				y_input = request.form['redbook_survey_y']
-			else:
-				x_input = None
-				y_input = None
-			print(data[x_input])
-			num_decimals = int(request.form['decimals'])
-			# float_arr = np.vstack(data[x_input][:, :]).astype(np.float)
-			# print(float_arr)
-			# ax.plot([1,2])
-			coef = np.polyfit(data[x_input],data[y_input],1)
-			poly1d_fn = np.poly1d(coef) 
-			ax.plot(data[x_input],data[y_input], 'yo', data[x_input], poly1d_fn(data[x_input]), '--k')
-			slope, intercept, r_value, p_value, std_err = stats.linregress(data[x_input], data[y_input])
-			# Save it to a temporary buffer.
-			buf = BytesIO()
-			fig.savefig(buf, format="png")
-			# Embed the result in the html output.
-			data2 = base64.b64encode(buf.getbuffer()).decode("ascii")
-			plot = f"<img style='width:100%' src='data:image/png;base64,{data2}'/>"
+			if request.form['function'] == "scatterplot":
+				if request.form['dataset'] == "Survey_2020":
+					x_input = request.form['survey_2020_x']
+					y_input = request.form['survey_2020_y']
+				elif request.form['dataset'] == "Redbook_Survey":
+					x_input = request.form['redbook_survey_x']
+					y_input = request.form['redbook_survey_y']
+				else:
+					x_input = None
+					y_input = None
+				fig = Figure()
+				ax = fig.subplots()
+				num_decimals = int(request.form['decimals'])
+				# float_arr = np.vstack(data[x_input][:, :]).astype(np.float)
+				# print(float_arr)
+				# ax.plot([1,2])
+				coef = np.polyfit(data[x_input],data[y_input],1)
+				poly1d_fn = np.poly1d(coef) 
+				ax.plot(data[x_input],data[y_input], 'yo', data[x_input], poly1d_fn(data[x_input]), '--k')
+				slope, intercept, r_value, p_value, std_err = stats.linregress(data[x_input], data[y_input])
+				# Save it to a temporary buffer.
+				buf = BytesIO()
+				fig.savefig(buf, format="png")
+				# Embed the result in the html output.
+				data2 = base64.b64encode(buf.getbuffer()).decode("ascii")
+				plot = f"<img style='width:100%' src='data:image/png;base64,{data2}'/>"
 
-			fig = Figure()
-			ax = fig.subplots()
-			sns.residplot(data[x_input],data[y_input],ax=ax)
-			buf = BytesIO()
-			fig.savefig(buf, format="png")
-			data2 = base64.b64encode(buf.getbuffer()).decode("ascii")
-			residual_plot = f"<img style='width:100%' src='data:image/png;base64,{data2}'/>"
-			
-			all_stats = [{"name":"slope","val":round(float(slope),num_decimals)}, {"name":"intercept","val":round(float(intercept),num_decimals)}, {"name":"R","val":round(float(r_value),num_decimals)}, {"name":"R SQUARED","val":str(round(float(r_value**2),num_decimals))+" ("+str(round(float(r_value**2*100),num_decimals))+'% of the variance in "'+x_input+'" can be explained by "'+y_input+'".)'}, {"name":"p","val":p_value}, {"name":"Standard Error","val":round(float(std_err),num_decimals)}]
-			return render_template('index.html', info = get_info(), form = form, plot = plot, residual_plot = residual_plot, all_stats = all_stats)
+				fig = Figure()
+				ax = fig.subplots()
+				sns.residplot(data[x_input],data[y_input],ax=ax)
+				buf = BytesIO()
+				fig.savefig(buf, format="png")
+				data2 = base64.b64encode(buf.getbuffer()).decode("ascii")
+				residual_plot = f"<img style='width:100%' src='data:image/png;base64,{data2}'/>"
+				
+				all_stats = [{"name":"slope","val":round(float(slope),num_decimals)}, {"name":"intercept","val":round(float(intercept),num_decimals)}, {"name":"R","val":round(float(r_value),num_decimals)}, {"name":"R SQUARED","val":str(round(float(r_value**2),num_decimals))+" ("+str(round(float(r_value**2*100),num_decimals))+'% of the variance in "'+x_input+'" can be explained by "'+y_input+'".)'}, {"name":"p","val":p_value}, {"name":"Standard Error","val":round(float(std_err),num_decimals)}]
+				return render_template('index.html', info = get_info(), form = form, plot = plot, residual_plot = residual_plot, all_stats = all_stats)
+			elif request.form['function'] == "1_samp_t_test":
+				if request.form['dataset'] == "Survey_2020":
+					x_input = request.form['survey_2020_t']
+				elif request.form['dataset'] == "Redbook_Survey":
+					x_input = request.form['redbook_survey_t']
+				else:
+					x_input = None
+				data_input = pd.to_numeric(data[x_input])
+				tscore, pvalue = stats.ttest_1samp(data_input, popmean=float(request.form['hypothetical_mean']))
+				if pvalue < 0.05:
+					all_stats = [{"name":"t score","val":tscore},{"name":"p-value","val":pvalue},{"name":"p < 0.05","val":"Reject the null hypothesis"}]
+				else:
+					all_stats = [{"name":"t score","val":tscore},{"name":"p-value","val":pvalue},{"name":"p ≥ 0.05","val":"Do not reject the null hypothesis"}]
+				return render_template('index.html', info = get_info(), form = form, all_stats = all_stats)
     # form = SearchForm()
 	return render_template('index.html', info = get_info(), form = form)
 
