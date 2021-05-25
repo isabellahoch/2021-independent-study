@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Statistical Calculator | Isabella's Independent Study{% endblock %}
+{% block content %}
+<div class="container-fluid align-items-center justify-content-center">
+    
+    <!-- <h1>Statistical Calculator</h1> -->
+    {% if plot %}
+    <div class="row">
+        <div class="col-md-4">{{ plot|safe }}</div>
+        {% if residual_plot %}
+        <div class="col-md-4">{{ residual_plot|safe }}</div>
+        {% endif %}
+        <div class="col-md-4">
+            <ul>
+                {% for stat in all_stats %}
+                <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% elif all_stats %}
+    <div class="row">
+        <ul>
+            {% for stat in all_stats %}
+            <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <form class="form" action="/select-function?dataset={{dataset}}" method="POST" name="form">
+        <div class="initial-select">
+            <h2>Select a Function</h2>
+            {{ form.function }}
+        </div>
+        <div class="stats">
+            <h3>Explanatory Variable</h3>
+            {{ form.x }}
+            <h3>Response Variable</h3>
+            {{ form.y }}
+            <h3>Precision</h3>
+            {{ form.decimals }}
+            {{ form.submit }}
+        </div>
+        <div class="t-test">
+            <h3>Select Variable</h3>
+            {{ form.t }}
+            <h3>Specify hypothetical mean value</h3>
+            {{ form.hypothetical_mean }}
+            <h3>Select desired comparison</h3>
+            {{ form.t_tail }}
+            {{ form.submit }}
+        </div>
+        <div class="pie-chart">
+            <h3>Select Variable</h3>
+            {{ form.pie }}
+            {{ form.submit }}
+        </div>
+    </form>
+    
+        {% endif %}
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#function-select-field').on('change', function (e) {
+    console.log("here");
+    $('.dataset').hide();
+    $(".stats").hide();
+    $(".t-test").hide();
+    if($("#function-select-field" ).val() == "scatterplot") {
+        $(".scatterplot").show();
+        $(".stats").show();
+    }
+    else if($("#function-select-field" ).val() == "pie_chart") {
+        $(".pie-chart").show();
+    }
+    else if($("#function-select-field" ).val() == "1_samp_t_test") {
+        $(".t-test").show();
+    }
+    // if($("#data-select-field" ).val() == "Survey_2020") {
+    //     $(".2020survey").show();
+    // }
+    // else if($("#data-select-field" ).val() == "Redbook_Survey") {
+    //     $(".redbooksurvey").show();
+    //     console.log("rbs");
+    // }
+});
+
+$( document ).ready(function() {
+    $('.dataset').hide();
+    $(".stats").hide();
+    $(".t-test").hide();
+    $(".pie-chart").hide();
+    $("#data-select-field option:selected").attr('disabled', 'disabled');
+    if($("#function-select-field" ).val() == "1") {
+        $("#function-select-field option:selected").attr('disabled', 'disabled');
+    }
+    if($("#function-select-field" ).val() == "scatterplot") {
+        $(".scatterplot").show();
+        $(".stats").show();
+    }
+    else if($("#function-select-field" ).val() == "pie_chart") {
+        $(".pie-chart").show();
+    }
+    else if($("#function-select-field" ).val() == "1_samp_t_test") {
+        $(".t-test").show();
+    }
+});
+</script>
+{% endblock %}

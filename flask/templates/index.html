@@ -2,60 +2,18 @@
 {% block title %}Statistical Calculator | Isabella's Independent Study{% endblock %}
 {% block content %}
 <div class="container-fluid align-items-center justify-content-center">
-    
-    <!-- <h1>Statistical Calculator</h1> -->
-    {% if plot %}
-    <div class="row">
-        <div class="col-md-4">{{ plot|safe }}</div>
-        {% if residual_plot %}
-        <div class="col-md-4">{{ residual_plot|safe }}</div>
-        {% endif %}
-        <div class="col-md-4">
-            <ul>
-                {% for stat in all_stats %}
-                <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    {% elif all_stats %}
-    <div class="row">
-        <ul>
-            {% for stat in all_stats %}
-            <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% else %}
     <form class="form" action="/" method="POST" name="form">
+        {{ form.hidden_tag() }}
         <div class="initial-select">
-            <h2>Select a Dataset</h2>
+            <h2><span class="highlight">Select an Existing Dataset</span></h2>
             {{ form.dataset }}
-            <h2>Select a Function</h2>
-            {{ form.function }}
-        </div>
-        <div class="stats">
-            <h3>Explanatory Variable</h3>
-            {{ form.survey_2020_x }}
-            {{ form.redbook_survey_x }}
-            <h3>Response Variable</h3>
-            {{ form.survey_2020_y }}
-            {{ form.redbook_survey_y }}
-            <h3>Precision</h3>
-            {{ form.decimals }}
-            {{ form.submit }}
-        </div>
-        <div class="t-test">
-            <h3>Select Variable</h3>
-            {{ form.survey_2020_t }}
-            {{ form.redbook_survey_t }}
-            <h3>Specify hypothetical mean value</h3>
-            {{ form.hypothetical_mean }}
-            {{ form.submit }}
+            <h2><span class="highlight">Enter Link to New Dataset</span></h2>
+            {{ form.link }}
+            <h2><span class="highlight">Upload Dataset (only .csv files accepted)</span></h2>
+            {{ form.file_upload }}
+            {{ form.go }}
         </div>
     </form>
-    
-        {% endif %}
 </div>
 {% endblock %}
 {% block js %}

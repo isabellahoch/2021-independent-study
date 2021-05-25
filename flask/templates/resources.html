@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Resources | Isabella's Independent Study{% endblock %}
+{% block content %}
+<div class="row">
+    <h1>Resources</h1>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h2>Links & Code</h2>
+        <ul>
+            {% for source in info.resources %}
+            <li><a href="{{ source.link }}"><strong>{{ source.title }}</strong></a> <i class="fas fa-external-link-alt"></i></li>
+            {% if source.iframe %}
+            {{ source.iframe|safe }}
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h2>Notes</h2>
+        <iframe frameborder=0 style="border:none; width:100%; height:2500px" src="https://docs.google.com/document/d/e/2PACX-1vTMxH0ryo650FtG9-54Py5tvt6t6vjFXXcW0C-_891AQ3-wVv2MB6YXZtuKxN7b7cmsZNO-8iOR7jAs/pub?embedded=true"></iframe>
+    </div>
+</div>
+{% endblock %}
+{% block head %}
+<style>
+    h1, h2 {
+        width:100%;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Results | Isabella's Independent Study{% endblock %}
+{% block content %}
+<div class="container-fluid align-items-center justify-content-center">
+    
+    <!-- <h1>Statistical Calculator</h1> -->
+    {% if selection %}
+    <div class="row">
+        <span><a href="/">Home</a>{% for item in selection %} > <a href="{{ item.link }}">{{ item.val }}</a>{% endfor %}</span>
+    </div>
+    {% endif %}
+    {% if selected_variables %}
+    <div class="row">
+        <ul style="background-color:	#a1e684">
+            {% for item in selected_variables %}
+            <li><strong>{{ item.name }}</strong>: {{ item.val }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if plot %}
+    <div class="row">
+        <div class="col-md-4">{{ plot|safe }}</div>
+        {% if residual_plot %}
+        <div class="col-md-4">{{ residual_plot|safe }}</div>
+        {% endif %}
+        <div class="col-md-4">
+            <ul>
+                {% for stat in all_stats %}
+                <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% elif pie_chart %}
+    <div class="row">
+        <div class="col">{{ pie_chart|safe }}</div>
+    </div>
+    {% elif all_stats %}
+    <div class="row">
+        <h1>Results</h1>
+        <ul>
+            {% for stat in all_stats %}
+            <li><strong>{{ stat.name }}</strong>: {{ stat.val }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if code_snippet %}
+    <div class="row code-snippet">
+        <h1>Sample Code</h1>
+        <code>{{ code_snippet }}</code>
+    </div>
+    {% endif %}
+    <div class="row">
+        <a href="/resources" class=""><h1>Resources <i class="fas fa-external-link-alt"></i></h1></a>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#function-select-field').on('change', function (e) {
+    console.log("here");
+    $('.dataset').hide();
+    $(".stats").hide();
+    $(".t-test").hide();
+    if($("#function-select-field" ).val() == "scatterplot") {
+        $(".scatterplot").show();
+        $(".stats").show();
+    }
+    else if($("#function-select-field" ).val() == "1_samp_t_test") {
+        $(".t-test").show();
+    }
+    // if($("#data-select-field" ).val() == "Survey_2020") {
+    //     $(".2020survey").show();
+    // }
+    // else if($("#data-select-field" ).val() == "Redbook_Survey") {
+    //     $(".redbooksurvey").show();
+    //     console.log("rbs");
+    // }
+});
+
+$( document ).ready(function() {
+    $('.dataset').hide();
+    $(".stats").hide();
+    $(".t-test").hide();
+    $("#data-select-field option:selected").attr('disabled', 'disabled');
+    $("#function-select-field option:selected").attr('disabled', 'disabled');
+});
+</script>
+{% endblock %}
+{% block head %}
+<style>
+    h1 { width:100%; }
+</style>
+<style>.row {
+    margin:15px;
+}</style>
+{% endblock %}
