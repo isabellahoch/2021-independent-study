@@ -246,7 +246,8 @@ def get_results():
 	except:
 		dataset = "Survey_2020"
 		function = "scatterplot"
-	data = pd.read_csv('static/data/'+str(dataset)+'.csv', thousands=',')
+	# data = pd.read_csv('static/data/'+str(dataset)+'.csv', thousands=',')
+	data = pd.read_csv('http://isabellas-independent-study.herokuapp.com/static/data/'+str(dataset)+'.csv', thousands=',')
 	if function == "scatterplot":
 		data = data.replace(',','', regex=True)
 		x_input = request.args.get('x')
